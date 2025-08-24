@@ -4,7 +4,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -22,7 +21,7 @@ class DrawingPanel extends JPanel {
     private boolean canAddPoints = true;
     private boolean isAnimating = false;
     private int animationStep = 0;
-    private Timer animationTimer;
+    private final Timer animationTimer;
 
     public DrawingPanel() {
         setBackground(Color.BLACK);
@@ -44,21 +43,23 @@ class DrawingPanel extends JPanel {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e){
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                   handleEnterPressed();
-                } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE){
-                    System.exit(0);
-                } else if (e.getKeyCode() == KeyEvent.VK_C) {
-                    resetCanvas();
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER:
+                        handleEnterPressed();
+                        break;
+                    case KeyEvent.VK_ESCAPE:
+                        System.exit(0);
+                    case KeyEvent.VK_C:
+                        resetCanvas();
+                        break;
+                    default:
+                        break;
                 }
             }
         });
 
-        animationTimer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                performChaikinStep();
-            }
+        animationTimer = new Timer(1000, (ActionEvent e) -> {
+            performChaikinStep();
         });
     }
 
