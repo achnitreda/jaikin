@@ -202,6 +202,7 @@ class DrawingPanel extends JPanel {
 
         String[] instructions = {
             "Left Click: Add control point",
+            "Enter: Start animation",
             "C: Clear all points", 
             "Escape: Exit program",
         };
