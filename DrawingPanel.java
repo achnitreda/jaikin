@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -110,17 +112,17 @@ class DrawingPanel extends JPanel {
             Point p1 = inputPoints.get(i);
             Point p2 = inputPoints.get(i + 1);
             
-            int deltaX = p2.x - p1.x;
-            int deltaY = p2.y - p1.y;
+            double deltaX = p2.x - p1.x;
+            double deltaY = p2.y - p1.y;
 
-            int qx = p1.x + (int)(0.25 * deltaX);
-            int qy = p1.y + (int)(0.25 * deltaY);
+            double qx = p1.x + 0.25 * deltaX;
+            double qy = p1.y + 0.25 * deltaY;
             
-            int rx = p1.x + (int)(0.75 * deltaX);
-            int ry = p1.y + (int)(0.75 * deltaY);
+            double rx = p1.x + 0.75 * deltaX;
+            double ry = p1.y + 0.75 * deltaY;
             
-            newPoints.add(new Point(qx, qy));
-            newPoints.add(new Point(rx, ry));
+            newPoints.add(new Point((int)Math.round(qx), (int)Math.round(qy)));
+            newPoints.add(new Point((int)Math.round(rx), (int)Math.round(ry)));
         }
         
         newPoints.add(new Point(inputPoints.get(inputPoints.size()-1).x, inputPoints.get(inputPoints.size()-1).y));
@@ -165,29 +167,33 @@ class DrawingPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.setColor(Color.WHITE);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        g2d.setColor(Color.WHITE);
 
         for (Point p : points) {
-            g.drawOval(p.x-5, p.y-5, 6, 6);
+            g2d.drawOval(p.x-3, p.y-3, 6, 6);
         }
 
         if (points.size() == 2 && !isAnimating && !canAddPoints) {
-            g.setColor(Color.WHITE);
+            g2d.setColor(Color.WHITE);
             Point p1 = points.get(0);
             Point p2 = points.get(1);
-            g.drawLine(p1.x, p1.y, p2.x, p2.y);
+            g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
 
         if (isAnimating && currentCurve.size() > 1) {
-            g.setColor(Color.WHITE);
+            g2d.setColor(Color.WHITE);
             for (int i = 0; i < currentCurve.size() - 1; i++) {
                 Point p1 = currentCurve.get(i);
                 Point p2 = currentCurve.get(i + 1);
-                g.drawLine(p1.x, p1.y, p2.x, p2.y);
+                g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
             }
         }
 
-        drawInstructions(g);
+        drawInstructions(g2d);
     }
 
     private void drawInstructions(Graphics g) {
